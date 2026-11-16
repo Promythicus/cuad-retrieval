@@ -1,0 +1,55 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Search first or read the whole contract? A local AI tested on 102 contracts</title><style>@page{size:Letter;margin:20mm}body{font:11pt/1.5 Georgia,serif;color:#111;max-width:170mm;margin:auto}h1{font:600 20pt/1.2 Arial,sans-serif;margin:0 0 6pt}
+h2{font:600 13pt Arial,sans-serif;margin:18pt 0 5pt}.sub{font:10pt Arial,sans-serif;color:#555}.ans{border-left:2pt solid #ff4a1c;padding-left:10pt;margin:12pt 0;font-size:12pt}
+table{border-collapse:collapse;width:100%;margin:6pt 0 10pt}td,th{border-bottom:1px solid #bbb;padding:5pt 8pt 5pt 0;text-align:left;font-size:10.5pt;vertical-align:top}thead th{font:600 9pt Arial,sans-serif;text-transform:uppercase;color:#555}tbody th{font-weight:normal}li{margin-bottom:4pt}</style></head><body><p class="sub">Promythicus Tech · Research 01 · 2026-11-15</p><h1>Search first or read the whole contract? A local AI tested on 102 contracts</h1><p class="ans">On the standard contract-review test (CUAD), a local model reading the whole contract quoted 82% of the clauses that lawyers had marked. Searching first and reading only the best passages quoted 50% with a basic search and 71% with the best search we found, while reading about a seventh of the text. The search itself went from finding the right clause 62% of the time to 88% with three changes: shorter passages, a newer embedding model, and a reranker. Everything ran on one workstation with one 16 GB graphics card and no cloud.</p>
+<p><img src="infographic.png" style="width:120mm;display:block;margin:8pt auto"></p>
+<h2>The question</h2>
+<p>A private document assistant can answer a question about a contract in two ways. It can read the whole contract every time. Or it can search the contract first and read only the few passages that look relevant. The second way is the only one that works across a whole collection, because no model can read five hundred contracts for one question. We wanted to know what the search costs in accuracy, and how good the search can be made.</p>
+<h2>The test</h2>
+<ul>
+<li><b>Data:</b> CUAD, a public set of commercial contracts in which lawyers marked the clauses that answer 41 standard review questions (is there a non-compete, a cap on liability, a renewal term, and so on). We used the official test split: 102 contracts and 4,182 questions.</li>
+<li><b>Machine:</b> one workstation with one 16 GB graphics card. Nothing was sent to a cloud.</li>
+<li><b>Model:</b> a mixed-precision variant of Qwen 3.8 27B that runs on a single 16 GB GPU.</li>
+<li><b>Task:</b> for each question, say whether the contract has language on the point, and quote it word for word.</li>
+</ul>
+<h2>Which search finds the right clause</h2>
+<p>This part needs no language model. For each of the 1,244 questions that have an answer, across all 102 contracts, we checked whether a passage holding part of the answer was among the ones the search returned. Each search was allowed to return about 6,000 characters.</p>
+<table class="w2">
+<thead><tr><th>Search</th><th>Right clause found</th></tr></thead>
+<tbody>
+<tr><th>Basic: an embedding model plus keywords, 1,200-character passages</th><td>62%</td></tr>
+<tr><th>The same, with the question reduced to the clause name and its description</th><td>69%</td></tr>
+<tr><th>The same, with 500-character passages</th><td>74%</td></tr>
+<tr><th>A newer embedding model (Qwen3-Embedding-0.6B), 500-character passages</th><td>83%</td></tr>
+<tr><th>The same, with a reranker (Qwen3-Reranker-0.6B) re-ordering the first 30 passages</th><td>88%</td></tr>
+</tbody>
+</table>
+<p>Allowed twice as much text, the best search found the right clause 93% of the time.</p>
+<p>What did not help: an embedding model seven times larger (the 4B version scored no better than the 0.6B one), adding keyword search to the newer embedding model, putting the contract’s title in front of every passage, and longer passages (2,400 characters dropped to 56%). That shorter passages matter most agrees with what the LegalBench-RAG authors reported. Unlike them, we found that a reranker helps.</p>
+<h2>What the model then answered</h2>
+<p>We then let the model answer, on ten contracts short enough to be read whole (410 questions, 248 marked clauses), so that every method faced exactly the same questions.</p>
+<table>
+<thead><tr><th>Way of reading</th><th>Marked clauses quoted</th><th>Quotes that are word for word</th><th>Text read per question</th></tr></thead>
+<tbody>
+<tr><th>Basic search, then read</th><td>50%</td><td>99%</td><td>about 1,300 tokens</td></tr>
+<tr><th>Best search, then read</th><td>71%</td><td>98%</td><td>about 1,200 tokens</td></tr>
+<tr><th>Best search, twice as many passages</th><td>73%</td><td>95%</td><td>about 2,300 tokens</td></tr>
+<tr><th>Read the whole contract</th><td>82%</td><td>91%</td><td>about 8,400 tokens</td></tr>
+</tbody>
+</table>
+<p>On the simpler question, “does this contract have such a clause at all”, the methods were close: the best search said yes on 93% of the questions that had an answer, the whole-contract reading on 89%. The whole-contract reading raised somewhat fewer false alarms (about a third of its yeses had no marked clause, against about four in ten after a search).</p>
+<h2>What we take from it</h2>
+<ul>
+<li><b>If one contract fits in the model’s memory, reading all of it is the most thorough.</b> It quoted 82% of the marked clauses, against 71% for the best search.</li>
+<li><b>The search is where the accuracy is won or lost.</b> The model quoted nearly every marked clause the search put in front of it. Going from the basic search to the best one moved the result from 50% to 71% with the same model and the same amount of reading.</li>
+<li><b>Shorter reading gives cleaner quotes.</b> After a search, 98% of the quotes matched the contract word for word. Reading the whole contract, 91% did.</li>
+<li><b>The search is fast.</b> Indexing the ten contracts took 2.4 seconds, and searching one took 0.16 seconds per question. The first question on a whole contract took 8 seconds on average and 16 for the longest; after a search it took 2.5.</li>
+</ul>
+<p>So a sensible assistant does both: it searches when the question covers many documents, and reads the whole document when the question is about one that fits.</p>
+<h2>Limits</h2>
+<ul>
+<li>The answering test covers ten contracts of at most 120,000 characters. Ten of the 102 contracts are longer than that and were left out of it. The search test covers all 102.</li>
+<li>The scoring is ours: a quoted passage counts if it overlaps a clause the lawyers marked. It is not the measure used in the CUAD paper, so these numbers cannot be set beside published ones.</li>
+<li>One model, one run. We did not test two newer methods, contextual retrieval and late chunking.</li>
+<li>These are American commercial contracts in English. A firm’s own documents will behave differently, which is why we run the demo on the firm’s own files.</li>
+</ul>
+<h2>Sources</h2><ul><li>The Atticus Project, CUAD: Contract Understanding Atticus Dataset<br>https://www.atticusprojectai.org/cuad</li><li>Hendrycks et al., CUAD: An Expert-Annotated NLP Dataset for Legal Contract Review (2021)<br>https://arxiv.org/abs/2103.06268</li><li>Pipitone and Alami, LegalBench-RAG: A Benchmark for Retrieval-Augmented Generation in the Legal Domain (2024)<br>https://arxiv.org/abs/2408.10343</li><li>Zhang et al., Qwen3 Embedding: Advancing Text Embedding and Reranking Through Foundation Models (2025)<br>https://arxiv.org/abs/2506.05176</li><li>Chen et al., M3-Embedding (BGE-M3) (2024)<br>https://arxiv.org/abs/2402.03216</li></ul></body></html>
