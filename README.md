@@ -1,6 +1,6 @@
 # 01. Search-then-read on CUAD
 
-**Promythicus research. Author: Bardia Shahrestani.** Write-up for a general reader: [promythicus.com/blog/search-or-read-whole-contract-local-ai-test/](https://promythicus.com/blog/search-or-read-whole-contract-local-ai-test/)
+**Promythicus research.** Write-up for a general reader: [promythicus.com/blog/search-or-read-whole-contract-local-ai-test/](https://promythicus.com/blog/search-or-read-whole-contract-local-ai-test/)
 
 <a href="https://promythicus.com/blog/search-or-read-whole-contract-local-ai-test/"><img src="publish/infographic.png" alt="Summary of the results" width="540"></a>
 
@@ -100,9 +100,11 @@ so they do not compare with published numbers. One model, one run, temperature 0
 
 ## Licence
 
-Code and write-ups: Apache-2.0, copyright 2026 Promythicus Tech Inc. Author: Bardia Shahrestani. Result files that quote dataset text keep the
+Code and write-ups: Apache-2.0, copyright 2026 Promythicus Tech Inc. Result files that quote dataset text keep the
 dataset's licence (CUAD: CC BY 4.0, The Atticus Project).
 
 One run of each, our own scoring: these numbers cannot be set beside published benchmarks. Corrections are welcome:
 root@promythicus.com. More experiments: [github.com/Promythicus](https://github.com/Promythicus) ·
 [promythicus.com/blog](https://promythicus.com/blog/)
+
+<sub>Author: Bardia Shahrestani</sub>
