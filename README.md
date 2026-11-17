@@ -1,4 +1,4 @@
-# 01. Search-then-read on CUAD
+# Search-then-read on CUAD
 
 **Promythicus research.** Write-up for a general reader: [promythicus.com/blog/search-or-read-whole-contract-local-ai-test/](https://promythicus.com/blog/search-or-read-whole-contract-local-ai-test/)
 
@@ -88,7 +88,7 @@ so they do not compare with published numbers. One model, one run, temperature 0
 
 **Published from it** (`publish/`): `report.pdf` (the write-up), `infographic.png` and `infographic-fr.png`
 (1080x1350, built from the `.html` beside them), `linkedin.txt`, `x.txt`. The article is in the site repo,
-`posts_research.py` (EN and FR), with the infographic in `assets/research-01-cuad*.png`.
+`posts_research.py` (EN and FR), with the infographic in `assets/research-cuad*.png`.
 
 ## Running it
 
